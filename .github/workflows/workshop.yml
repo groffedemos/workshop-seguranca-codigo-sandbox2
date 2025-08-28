@@ -162,6 +162,7 @@ jobs:
           ls -l
 
       - name: Upload do relatorio PDF do KICS com resultados da analise
+        if: always()
         uses: actions/upload-artifact@v4.6.1
         with:
           name: 'results-kubernetes.sarif'
