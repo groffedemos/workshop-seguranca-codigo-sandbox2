@@ -152,7 +152,21 @@ jobs:
             --report-formats sarif --output-name results-kubernetes.sarif \
             --type Kubernetes
 
-
+      - name: Exibir arquivos apos execucao do KICS
+        if: always()
+        run: |
+          cd ${{ env.DIR_DEVOPS_ARTIFACTS }}
+          pwd
+          echo
+          echo
+          ls -l
+        
+      - name: Upload arquivo SARIF file
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ env.DIR_DEVOPS_ARTIFACTS }}/results-kubernetes.sarif
+          category: sast-tools
         
 
 
