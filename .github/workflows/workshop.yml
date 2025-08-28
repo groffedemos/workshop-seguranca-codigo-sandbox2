@@ -106,6 +106,7 @@ jobs:
           ls -l
           
       - name: Exibir conteúdo do Arquivo SARIF gerado
+        if: always()
         run: cat ./results/results-dockerfile.sarif
         
       - name: Upload arquivo SARIF file
@@ -167,6 +168,7 @@ jobs:
           ls -l
 
       - name: Exibir conteúdo do Arquivo SARIF gerado
+        if: always()
         run: cat ./results/results-kubernetes.sarif
 
       - name: Upload arquivo SARIF file
