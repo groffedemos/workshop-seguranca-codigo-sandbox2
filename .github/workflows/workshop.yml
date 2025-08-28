@@ -104,7 +104,10 @@ jobs:
           echo
           echo
           ls -l
-
+          
+      - name: Exibir conteúdo do Arquivo SARIF gerado
+        run: cat ./results/results-dockerfile.sarif
+        
       - name: Upload arquivo SARIF file
         if: always()
         uses: github/codeql-action/upload-sarif@v3
@@ -162,6 +165,9 @@ jobs:
           echo
           echo
           ls -l
+
+      - name: Exibir conteúdo do Arquivo SARIF gerado
+        run: cat ./results/results-kubernetes.sarif
 
       - name: Upload arquivo SARIF file
         if: always()
