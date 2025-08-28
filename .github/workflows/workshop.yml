@@ -149,7 +149,7 @@ jobs:
           docker run -t -v $PWD:/path checkmarx/kics scan -p /path -o "/path/" \
             --exclude-severities low,info,trace \
             --exclude-queries 611ab018-c4aa-4ba2-b0f6-a448337509a6,48471392-d4d0-47c0-b135-cdec95eb3eef \
-            --report-formats sarif --output-name results-kubernetes.sarif \
+            --report-formats pdf --output-name results-kubernetes.pdf \
             --type Kubernetes
 
       - name: Exibir arquivos apos execucao do KICS
@@ -160,14 +160,12 @@ jobs:
           echo
           echo
           ls -l
-        
-      - name: Upload arquivo SARIF file
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
+
+      - name: Upload do relatorio PDF do KICS com resultados da analise
+        uses: actions/upload-artifact@v4.6.1
         with:
-          sarif_file: ${{ env.DIR_DEVOPS_ARTIFACTS }}/results-kubernetes.sarif
-          category: sast-tools
-        
+          name: 'results-kubernetes.sarif'
+          path: ${{ env.DIR_DEVOPS_ARTIFACTS }}/results-kubernetes.sarif
 
 
 
