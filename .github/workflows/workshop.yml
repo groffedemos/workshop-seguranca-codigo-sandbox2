@@ -41,17 +41,17 @@ jobs:
           echo ''
           gitleaks --help
 
-      - name: Criar diretório results
+      - name: Criar diretorio results
         run: mkdir results
 
-      - name: Executar o Gitleaks no repositório
+      - name: Executar o Gitleaks no repositorio
         run: |
           curl -L -o ./results/report-basic.tmpl https://raw.githubusercontent.com/gitleaks/gitleaks/refs/heads/master/report_templates/basic.tmpl
           gitleaks dir . \
             --report-format=sarif \
             --report-path=./results/results-secrets.sarif
 
-      - name: Exibir conteúdo do diretório results
+      - name: Exibir conteudo do diretorio results
         if: always()
         run: |
           cd results
@@ -76,15 +76,15 @@ jobs:
       - name: Instalar o Checkov via pip
         run: pip install checkov
 
-      - name: Testar a instalação do Checkov
+      - name: Testar a instalacao do Checkov
         run: |
           checkov
           checkov --help
 
-      - name: Criar diretório results
+      - name: Criar diretorio results
         run: mkdir results
 
-      - name: Executar análise com o Checkov
+      - name: Executar analise com o Checkov
         run: |
           echo 'Vulnerabilidades que serao ignoradas ao executar o Checkov:'
           echo '* CKV_DOCKER_2 - Ensure that HEALTHCHECK instructions have been added to container images'
@@ -111,3 +111,51 @@ jobs:
         with:
           sarif_file: ./results/results-dockerfile.sarif
           category: sast-tools
+
+  kubernetes_yaml_scanning:
+    needs: dockerfile_scanning
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Baixa a imagem do KICS
+        run: docker pull checkmarx/kics:latest
+
+      - name: Exibir imagens no ambiente local
+        run: docker images
+        
+      - name: Exibir opcoes da linha de comando do KICS
+        run: docker run -t checkmarx/kics scan --help
+
+      - name: Configurar permissoes de diretorio para uso do KICS
+        run: |
+          cd ${{ env.DIR_DEVOPS_ARTIFACTS }}
+          echo '**** Diretorio:'
+          echo $PWD
+          echo ''
+          chmod -R 777 .
+          echo 'Permissoes apos ajustes'
+          ls -ld
+
+      - name: Configurar permissoes de diretorio para uso do KICS
+        run: |
+          echo 'Vulnerabilidades que serao ignoradas ao executar o KICS:'
+          echo '* 611ab018-c4aa-4ba2-b0f6-a448337509a6 - Namespaces like default, kube-system or kube-public should not be used'
+          echo '* 48471392-d4d0-47c0-b135-cdec95eb3eef - Service Account Token Automount Not Disabled'
+          echo
+          cd ${{ env.DIR_DEVOPS_ARTIFACTS }}
+          docker run -t -v $PWD:/path checkmarx/kics scan -p /path -o "/path/" \
+            --exclude-queries 611ab018-c4aa-4ba2-b0f6-a448337509a6,48471392-d4d0-47c0-b135-cdec95eb3eef
+            --exclude-severities low,info,trace \
+            --report-formats sarif --output-name results-kubernetes.sarif \
+            --type Kubernetes
+
+
+        
+
+
+
+
+
