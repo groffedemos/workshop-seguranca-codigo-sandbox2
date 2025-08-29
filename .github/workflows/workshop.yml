@@ -198,3 +198,28 @@ jobs:
           
       - name: Exibir containers em execucao
         run: docker container ls
+
+      - name: Criar namespace integrationtests
+        run: |
+          kubectl create namespace integrationtests
+          kubectl get namespaces
+
+      - name: Deployment do Job no ambiente de testes - namespace integrationtests
+        run: |
+          cd ${{ env.DIR_DEVOPS_ARTIFACTS }}
+          kubectl apply -f job-teste.yaml -n integrationtests
+
+      - name: Verificar deployment do Job no ambiente de testes - namespace integrationtests
+        run: |
+          kubectl get all -n integrationtests
+          kubectl get jobs -n integrationtests
+          echo ' '
+          echo 'Aguardando a inicialização dos serviços no cluster...'
+          echo ' '
+          sleep 45s
+          kubectl get all -n integrationtests
+          kubectl get jobs -n integrationtests
+
+      - name: Exibir logs do Job no ambiente de testes - namespace integrationtests
+        run: |
+          kubectl logs $(kubectl get pods --selector=job-name=exemplo-job --output=jsonpath='{.items[0].metadata.name}') -n integrationtests
