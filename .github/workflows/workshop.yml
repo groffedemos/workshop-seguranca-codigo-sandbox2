@@ -222,4 +222,4 @@ jobs:
 
       - name: Exibir logs do Job no ambiente de testes - namespace integrationtests
         run: |
-          kubectl logs $(kubectl get pods --selector=job-name=exemplo-job --output=jsonpath='{.items[0].metadata.name}') -n integrationtests
+          kubectl logs job.batch/exemplo-job -n integrationtests
