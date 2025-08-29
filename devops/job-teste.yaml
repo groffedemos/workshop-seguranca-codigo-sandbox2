@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
       - name: exemplo
-        image: renatogroffe/dotnet9-job-httprequest:1
+        image: renatogroffe/dotnet9-job-httprequest:2
         env:
         - name: EndpointNotificacao
           value: "https://baconipsum.com/api/?type=all-meat"
