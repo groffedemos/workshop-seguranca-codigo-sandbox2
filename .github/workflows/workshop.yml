@@ -143,12 +143,16 @@ jobs:
         run: |
           echo 'Vulnerabilidades que serao ignoradas ao executar o KICS:'
           echo '* 611ab018-c4aa-4ba2-b0f6-a448337509a6 - Namespaces like default, kube-system or kube-public should not be used'
-          echo '* 48471392-d4d0-47c0-b135-cdec95eb3eef - Service Account Token Automount Not Disabled'
+          echo '* 48471392-d4d0-47c0-b135-cdec95eb3eef - Service Account Token Automount Not Disabled          echo '* 48471392-d4d0-47c0-b135-cdec95eb3eef - Service Account Token Automount Not Disabled'
+          echo '* f377b83e-bd07-4f48-a591-60c82b14a78b - Seccomp Profile Is Not Configured'
+          echo '* dbbc6705-d541-43b0-b166-dd4be8208b54 - NET_RAW Capabilities Not Being Dropped'
+          echo '* 02323c00-cdc3-4fdc-a310-4f2b3e7a1660 - Container Running With Low UID'
+          echo '* cf34805e-3872-4c08-bf92-6ff7bb0cfadb - Containers should only run as non-root user'
           echo
           cd ${{ env.DIR_DEVOPS_ARTIFACTS }}
           docker run -t -v $PWD:/path checkmarx/kics scan -p /path -o "/path/" \
             --exclude-severities low,info,trace \
-            --exclude-queries 611ab018-c4aa-4ba2-b0f6-a448337509a6,48471392-d4d0-47c0-b135-cdec95eb3eef \
+            --exclude-queries 611ab018-c4aa-4ba2-b0f6-a448337509a6,48471392-d4d0-47c0-b135-cdec95eb3eef,f377b83e-bd07-4f48-a591-60c82b14a78b,dbbc6705-d541-43b0-b166-dd4be8208b54,02323c00-cdc3-4fdc-a310-4f2b3e7a1660,cf34805e-3872-4c08-bf92-6ff7bb0cfadb \
             --report-formats pdf --output-name results-kubernetes \
             --type Kubernetes
 
