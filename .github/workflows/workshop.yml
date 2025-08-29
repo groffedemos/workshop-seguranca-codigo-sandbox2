@@ -12,6 +12,7 @@ env:
   URL_GITLEAKS_RELEASE: 'https://github.com/gitleaks/gitleaks/releases/download/v8.28.0/gitleaks_8.28.0_linux_x64.tar.gz'
   DIR_DOCKERFILE: './src/ConsoleAppJobHttpRequest'
   DIR_DEVOPS_ARTIFACTS: './devops'
+  DIR_TESTS: './tests'
 
 jobs:
   secrets_scanning:
@@ -172,7 +173,28 @@ jobs:
           name: 'results-kubernetes'
           path: ${{ env.DIR_DEVOPS_ARTIFACTS }}/results-kubernetes.pdf
 
+  tests:
+    needs: kubernetes_yaml_scanning
+    runs-on: ubuntu-latest
+    if: always()
 
+    steps:
+      - uses: actions/checkout@v4
 
+      - name: Verificar se o kind esta instalado
+        run: kind
+      
+      - name: Criar cluster de testes com o kind
+        run: |
+          cd ${{ env.DIR_TESTS }}
+          kind create cluster --name kind-01 --config=kind-cluster-config-automation-env.yaml
 
-
+      - name: Testar o cluster Kubernetes criado com o kind
+        run: |
+          echo ' '
+          echo 'Cluster Kubernetes local em funcionamento...'
+          echo ' '
+          kubectl get services
+          
+      - name: Exibir containers em execucao
+        run: docker container ls
