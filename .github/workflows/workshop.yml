@@ -184,7 +184,7 @@ jobs:
       - name: Build da imagem da aplicacao
         run: |
           cd ${{ env.DIR_DOCKERFILE }}
-          docker build . -t workshop/dotnet9-job-httprequest:$GITHUB_RUN_NUMBER
+          docker build . -t workshop/job-httprequest:$GITHUB_RUN_NUMBER
 
       - name: Exibir imagens no ambiente apos build
         run: |
@@ -208,10 +208,25 @@ jobs:
       - name: Exibir containers em execucao
         run: docker container ls
 
+      - name: Carregar imagem no cluster criado com kind
+        run: |
+          kind load docker-image workshop/job-httprequest:$GITHUB_RUN_NUMBER --name kind-01
+
       - name: Criar namespace integrationtests
         run: |
           kubectl create namespace integrationtests
           kubectl get namespaces
+
+      - name: Exibir conteudo do arquivo YAML de deployment antes dos ajustes
+        run: cat ${{ env.DIR_DEVOPS_ARTIFACTS }}/job-teste.yaml
+
+      - name: Ajustar arquivo YAML de deployment
+        uses: cschleiden/replace-tokens@v1
+        with:
+          files: '["**/job-teste.yaml"]'
+
+      - name: Exibir conteudo do arquivo YAML de deployment apos ajustes
+        run: cat ${{ env.DIR_DEVOPS_ARTIFACTS }}/job-teste.yaml
 
       - name: Deployment do Job no ambiente de testes - namespace integrationtests
         run: |
