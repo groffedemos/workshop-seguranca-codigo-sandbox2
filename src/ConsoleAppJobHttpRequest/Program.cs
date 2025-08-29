@@ -1,9 +1,6 @@
-﻿using ConsoleAppJobNotificacaoHttp.Models;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Serilog.Sinks.SystemConsole.Themes;
 using Serilog;
-using System.Net.Http.Json;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 
 var configuration = new ConfigurationBuilder()
@@ -20,19 +17,11 @@ logger.Information("Iniciando a execucao do Job...");
 
 try
 {
-    var infoExecucao = new InfoExecucao()
-    {
-        Instancia = Environment.MachineName,
-        Kernel = Environment.OSVersion.VersionString,
-        Framework = RuntimeInformation.FrameworkDescription,
-        Horario = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-    };
     using var httpClient = new HttpClient();
-    var response = await httpClient.PostAsJsonAsync<InfoExecucao>(
-        configuration["EndpointNotificacao"], infoExecucao);
+    var response = await httpClient.GetAsync(configuration["EndpointRequest"]);
     response.EnsureSuccessStatusCode();
     logger.Information("Notificacao enviada com sucesso!");
-    logger.Information($"Dados transmitidos = {JsonSerializer.Serialize(infoExecucao)}");
+    logger.Information($"Dados recebidos = {JsonSerializer.Serialize(await response.Content.ReadAsStringAsync())}");
     logger.Information("Job executado com sucesso!");
 }
 catch (Exception ex)

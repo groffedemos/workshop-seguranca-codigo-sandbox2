@@ -1,12 +1,23 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: exemplo-job
+  name: exemplo-job7
 spec:
   template:
     spec:
       containers:
       - name: exemplo
-        image: busybox:latest
-        command: ["echo", "Hello Kubernetes Job!"]
+        image: renatogroffe/dotnet9-job-httprequest:1
+        env:
+        - name: EndpointNotificacao
+          value: "https://baconipsum.com/api/?type=all-meat"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        securityContext:
+          allowPrivilegeEscalation: false
       restartPolicy: Never
